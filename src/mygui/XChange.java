@@ -44,7 +44,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class XChange extends javax.swing.JFrame {
     
-    private static String host = "172.16.139.51"; //Host IP Address
+    private static String host = "172.16.1.3"; //Host IP Address
     private static final int port = 9760;
     private static byte receivedCurVer;
     private static final byte  curVer = 1, 
@@ -171,7 +171,7 @@ public class XChange extends javax.swing.JFrame {
             jTable1.getColumnModel().getColumn(4).setResizable(false);
             jTable1.getColumnModel().getColumn(4).setPreferredWidth(0);
         }
-        //jTable1.removeColumn(jTable1.getColumnModel().getColumn(4));
+        jTable1.removeColumn(jTable1.getColumnModel().getColumn(4));
 
         jButton6.setText("Download");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
