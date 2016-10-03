@@ -44,7 +44,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class XChange extends javax.swing.JFrame {
     
-    private static String host = "172.16.139.51";
+    private static String host = "172.16.139.51"; //Host IP Address
     private static final int port = 9760;
     private static byte receivedCurVer;
     private static final byte  curVer = 1, 
