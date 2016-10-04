@@ -63,7 +63,8 @@ public class XChange extends javax.swing.JFrame {
             BYTE_DOWNLOAD_FAILED_USER_OFFLINE = 17, //done
             BYTE_LOGIN_FAILED = 18, //done
             BYTE_SIGNUP_FAILED = 19, //done
-            BYTE_DOWNLOAD_FAILED_FILE_NOT_AVAILABLE = 20; //done
+            BYTE_DOWNLOAD_FAILED_FILE_NOT_AVAILABLE = 20,
+            BYTE_LISTENING = 21; //done
     private static ArrayList<String[]> listDownload;
     private static Socket socket;
     private static InputStream inMsg;
@@ -541,19 +542,28 @@ public class XChange extends javax.swing.JFrame {
             String date = formatter.format(today);
             
             try {
+                System.out.println("debug0");
                 DataOutputStream dOutMsg = new DataOutputStream(outMsg);
+                DataInputStream dInMsg = new DataInputStream(inMsg);
+                while(dInMsg.readByte() != BYTE_LISTENING){
+                    
+                }
                 dOutMsg.writeByte(BYTE_ADD);
                 dOutMsg.flush();
+                System.out.println("debug1");
                 BufferedWriter bufWriter = new BufferedWriter(new OutputStreamWriter(outMsg));
                 bufWriter.write(path+"\n");
-                bufWriter.flush();
+                //bufWriter.flush();
+                System.out.println("debug2");
                 bufWriter.write(size+"\n");
-                bufWriter.flush();
+                //bufWriter.flush();
+                System.out.println("debug3");
                 bufWriter.write(date+"\n");
-                bufWriter.flush();
+                //bufWriter.flush();
+                System.out.println("debug4");
                 bufWriter.write(name+"\n");
                 bufWriter.flush();
-                
+                System.out.println("debug5");
                 token++;
                 DefaultTableModel tableModel = ((DefaultTableModel) jTable2.getModel());
                 tableModel.addRow(new String[]{name, size, date, String.valueOf(token), path});
@@ -572,17 +582,24 @@ public class XChange extends javax.swing.JFrame {
         int[] rows = jTable2.getSelectedRows();
         if (rows == null) return;
         if (rows.length <=0) return;
-        
+        Arrays.sort(rows);
         for (int i=0; i<rows.length; i++){
             try {
-                int fileId = Integer.parseInt((String)jTable2.getModel().getValueAt(i, 3));
+                int fileId = Integer.parseInt((String)jTable2.getModel().getValueAt(rows[i], 3));
                 DataOutputStream dOutMsg = new DataOutputStream(outMsg);
+                DataInputStream dInMsg = new DataInputStream(inMsg);
+                while(dInMsg.readByte() != BYTE_LISTENING){
+                    
+                }
                 dOutMsg.writeByte(BYTE_REMOVE);
                 dOutMsg.flush();
                 dOutMsg.writeInt(fileId);
                 dOutMsg.flush();
                 
-                ((DefaultTableModel) jTable2.getModel()).removeRow(i);
+                ((DefaultTableModel) jTable2.getModel()).removeRow(rows[i]);
+                for (int ii=0; ii<rows.length; ii++){
+                    rows[ii]--;
+                }
             } catch (IOException ex) {
                 Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -592,17 +609,20 @@ public class XChange extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // Remove All button clicked
-        
-        for (int i=0; i<jTable2.getRowCount(); i++){
+        int k = jTable2.getRowCount();
+        for (int i=0; i<k; i++){
             try{
-                int fileId = Integer.parseInt((String) jTable2.getModel().getValueAt(i, 3));
+                int fileId = Integer.parseInt((String) jTable2.getModel().getValueAt(0, 3));
                 DataOutputStream dOutMsg = new DataOutputStream(outMsg);
+                DataInputStream dInMsg = new DataInputStream(inMsg);
+                while(dInMsg.readByte() != BYTE_LISTENING){
+                }
                 dOutMsg.writeByte(BYTE_REMOVE);
                 dOutMsg.flush();
                 dOutMsg.writeInt(fileId);
                 dOutMsg.flush();
                 
-                ((DefaultTableModel) jTable2.getModel()).removeRow(i);
+                ((DefaultTableModel) jTable2.getModel()).removeRow(0);
             }catch (IOException ex) {
                 Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -622,6 +642,10 @@ public class XChange extends javax.swing.JFrame {
             String username = (String) jTable1.getModel().getValueAt(row, 2);
             
             DataOutputStream dOutMsg = new DataOutputStream(outMsg);
+            DataInputStream dInMsg = new DataInputStream(inMsg);
+            
+            while(dInMsg.readByte() != BYTE_LISTENING){
+            }
             dOutMsg.writeByte(BYTE_DOWNLOAD);
             dOutMsg.flush();
             dOutMsg.writeInt(fileId);
@@ -630,7 +654,7 @@ public class XChange extends javax.swing.JFrame {
             bufw.write(username+"\n");
             bufw.flush();
             
-            DataInputStream dInMsg = new DataInputStream(inMsg);
+            
             
             if (dInMsg.readByte() == BYTE_DOWNLOAD_FAILED_USER_OFFLINE){
                 jLabel5.setText("Error: User offline");
@@ -788,6 +812,9 @@ public class XChange extends javax.swing.JFrame {
     private static byte authenticateUser(String username, String password){
         try {
             DataOutputStream doutMsg = new DataOutputStream(outMsg);
+            DataInputStream dinMsg = new DataInputStream(inMsg);
+            while(dinMsg.readByte() != BYTE_LISTENING){
+            }
             doutMsg.writeByte(BYTE_LOGIN);
             doutMsg.flush();
             BufferedWriter bufw = new BufferedWriter(new OutputStreamWriter(outMsg));
@@ -796,7 +823,7 @@ public class XChange extends javax.swing.JFrame {
             bufw.write(password+"\n");
             bufw.flush();
             
-            DataInputStream dinMsg = new DataInputStream(inMsg);
+            
             byte msg = dinMsg.readByte();
             return msg;
         } catch (IOException ex) {
@@ -811,6 +838,9 @@ public class XChange extends javax.swing.JFrame {
     private static byte signUpUser(String username, String password){
         try {
             DataOutputStream doutMsg = new DataOutputStream(outMsg);
+            DataInputStream dinMsg = new DataInputStream(inMsg);
+            while (dinMsg.readByte() != BYTE_LISTENING){
+            }
             doutMsg.writeByte(BYTE_SIGNUP);
             doutMsg.flush();
             BufferedWriter bufw = new BufferedWriter(new OutputStreamWriter(outMsg));
@@ -819,7 +849,7 @@ public class XChange extends javax.swing.JFrame {
             bufw.write(password+"\n");
             bufw.flush();
             
-            DataInputStream dinMsg = new DataInputStream(inMsg);
+            
             byte msg = dinMsg.readByte();
             return msg;
         } catch (IOException ex) {
@@ -916,6 +946,8 @@ public class XChange extends javax.swing.JFrame {
             
             token = dinMsg.readInt();
             
+            while (dinMsg.readByte() != BYTE_LISTENING){
+            }
             doutMsg.writeByte(BYTE_GET_SHARED_LIST);
             doutMsg.flush();
             
@@ -944,9 +976,12 @@ public class XChange extends javax.swing.JFrame {
     private void refreshDownloadList() {
         try{
             DataOutputStream dOutMsg = new DataOutputStream(outMsg);
+            DataInputStream dInMsg = new DataInputStream(inMsg);
+            while(dInMsg.readByte() != BYTE_LISTENING){
+            }
             dOutMsg.writeByte(BYTE_GET_DOWNLOAD_LIST);
             dOutMsg.flush();
-            DataInputStream dInMsg = new DataInputStream(inMsg);
+            
             int noOfFiles = dInMsg.readInt();
             BufferedReader bufr = new BufferedReader(new InputStreamReader(inMsg));
             
