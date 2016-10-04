@@ -171,7 +171,7 @@ public class XChange extends javax.swing.JFrame {
             jTable1.getColumnModel().getColumn(4).setResizable(false);
             jTable1.getColumnModel().getColumn(4).setPreferredWidth(0);
         }
-        jTable1.removeColumn(jTable1.getColumnModel().getColumn(4));
+        //jTable1.removeColumn(jTable1.getColumnModel().getColumn(4));
 
         jButton6.setText("Download");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -256,7 +256,7 @@ public class XChange extends javax.swing.JFrame {
             jTable2.getColumnModel().getColumn(4).setResizable(false);
             jTable2.getColumnModel().getColumn(4).setPreferredWidth(0);
         }
-        jTable2.removeColumn(jTable2.getColumnModel().getColumn(3));
+        //jTable2.removeColumn(jTable2.getColumnModel().getColumn(3));
 
         jButton3.setText("Add");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -511,6 +511,8 @@ public class XChange extends javax.swing.JFrame {
             File selection = files[i];
 
             String path = selection.getAbsolutePath();
+            String name = selection.getName();
+            
             FileInputStream fis = null;
             String size = null;
             try {
@@ -537,7 +539,7 @@ public class XChange extends javax.swing.JFrame {
             }
 
             String date = formatter.format(today);
-
+            
             try {
                 DataOutputStream dOutMsg = new DataOutputStream(outMsg);
                 dOutMsg.writeByte(BYTE_ADD);
@@ -549,10 +551,12 @@ public class XChange extends javax.swing.JFrame {
                 bufWriter.flush();
                 bufWriter.write(date+"\n");
                 bufWriter.flush();
+                bufWriter.write(name+"\n");
+                bufWriter.flush();
                 
                 token++;
                 DefaultTableModel tableModel = ((DefaultTableModel) jTable2.getModel());
-                tableModel.addRow(new String[]{Paths.get(path).getFileName().toString(), size, date, String.valueOf(token), path});
+                tableModel.addRow(new String[]{name, size, date, String.valueOf(token), path});
                 
                 tableModel.fireTableDataChanged();
                 
@@ -674,18 +678,38 @@ public class XChange extends javax.swing.JFrame {
         byte[] buffer = new byte[16*1024];
 
         //Downloading file
-        jLabel5.setText("Downloading file...");
-
-        int count;
-        while ((count = inData.read(buffer)) > 0){
-            fos.write(buffer, 0, count);
-        }
-
-        jLabel5.setText(filename+" successfully downloaded.");
-
-        fos.close();
-        inData.close();
-        downloadClient.close();
+        jLabel5.setText("Downloading "+filename+" - 0%");
+        final long totBytes = dInData.readLong();
+        
+        new Thread(new Runnable(){
+            @Override
+            public void run(){
+                try {
+                    long totBytesRead = 0;
+                    int count;
+                    while ((count = inData.read(buffer)) > 0){
+                        fos.write(buffer, 0, count);
+                        totBytesRead += count;
+                        int percent = (int) ((((float) totBytesRead)/((float) totBytes))*100);
+                        jLabel5.setText("Downloading "+filename+" - "+String.valueOf(percent)+"%");
+                    }
+                    fos.close();
+                    downloadClient.close();
+                    jLabel5.setText(filename+" successfully downloaded.");
+                } catch (IOException ex) {
+                    jLabel5.setText("Network Error.");
+                    try {
+                        fos.close();
+                        downloadClient.close();
+                    } catch (IOException ex1) {
+                        Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+                    
+                    Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }).start();
+        
     }
     
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -830,47 +854,57 @@ public class XChange extends javax.swing.JFrame {
                         
                         try {
                             Socket downloadServer = downloadServerSocket.accept();
-                            InputStream inData = downloadServer.getInputStream();
-                            OutputStream outData = downloadServer.getOutputStream();
-                            DataInputStream dInData = new DataInputStream(inData);
-                            DataOutputStream dOutData = new DataOutputStream(outData);
-                            
-                            int fileId = dInData.readInt();
-                            int row = -1;
-                            for (row=0; row<jTable2.getModel().getRowCount(); row++){
-                                if (fileId == Integer.parseInt((String) jTable2.getModel().getValueAt(row, 3))){
-                                    break;
+                            new Thread(new Runnable(){
+                                @Override
+                                public void run(){
+                                    InputStream fileIn = null;
+                                    try {
+                                        InputStream inData = downloadServer.getInputStream();
+                                        OutputStream outData = downloadServer.getOutputStream();
+                                        DataInputStream dInData = new DataInputStream(inData);
+                                        DataOutputStream dOutData = new DataOutputStream(outData);
+                                        int fileId = dInData.readInt();
+                                        int row;
+                                        for (row=0; row<jTable2.getModel().getRowCount(); row++){
+                                            if (fileId == Integer.parseInt((String) jTable2.getModel().getValueAt(row, 3))){
+                                                break;
+                                            }
+                                        }   
+                                        if (row >= jTable2.getModel().getRowCount() || row == -1){
+                                            dOutData.writeByte(BYTE_DOWNLOAD_FAILED_FILE_NOT_AVAILABLE);
+                                            dOutData.flush();
+                                            return;
+                                        }   
+                                        String filepath = (String) jTable2.getModel().getValueAt(row, 4);
+                                        File file = new File(filepath);
+                                        if (!file.exists()){
+                                            dOutData.writeByte(BYTE_DOWNLOAD_FAILED_FILE_NOT_AVAILABLE);
+                                            dOutData.flush();
+                                            return;
+                                        }
+                                        dOutData.writeByte(BYTE_DOWNLOAD_READY);
+                                        dOutData.flush();
+                                        fileIn = new FileInputStream(file);
+                                        long totalBytes = file.length();
+                                        dOutData.writeLong(totalBytes);
+                                        byte[] buffer = new byte[16*1024];
+                                        int count;
+                                        while ((count = fileIn.read(buffer)) > 0){
+                                            outData.write(buffer, 0, count);
+                                        }
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
+                                    } finally {
+                                        try {
+                                            if (fileIn != null) fileIn.close();
+                                            downloadServer.close();
+                                        } catch (IOException ex) {
+                                            Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                    }
                                 }
-                            }
+                            }).start();
                             
-                            if (row >= jTable2.getModel().getRowCount() || row == -1){
-                                dOutData.writeByte(BYTE_DOWNLOAD_FAILED_FILE_NOT_AVAILABLE);
-                                dOutData.flush();
-                                continue;
-                            }
-                            
-                            String filepath = (String) jTable2.getModel().getValueAt(row, 4);
-                            File file = new File(filepath);
-                            if (!file.exists()){
-                                dOutData.writeByte(BYTE_DOWNLOAD_FAILED_FILE_NOT_AVAILABLE);
-                                dOutData.flush();
-                                continue;
-                            }
-                            
-                            dOutData.writeByte(BYTE_DOWNLOAD_READY);
-                            dOutData.flush();
-                            
-                            InputStream fileIn = new FileInputStream(file);
-                            byte[] buffer = new byte[16*1024];
-                            
-                            int count;
-                            while ((count = fileIn.read(buffer)) > 0){
-                                outData.write(buffer, 0, count);
-                            }
-                            
-                            outData.close();
-                            fileIn.close();
-                            downloadServer.close();
                         } catch (IOException ex) {
                             Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -894,7 +928,9 @@ public class XChange extends javax.swing.JFrame {
                 String filesize = bufr.readLine();
                 String filedate = bufr.readLine();
                 String fileid = bufr.readLine();
-                tableModel.addRow(new String[]{Paths.get(filepath).getFileName().toString(), filesize, filedate, fileid, filepath});
+                String filename = bufr.readLine();
+                
+                tableModel.addRow(new String[]{filename, filesize, filedate, fileid, filepath});
             }
             
             jTable2.setModel(tableModel);
