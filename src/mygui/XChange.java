@@ -69,7 +69,7 @@ public class XChange extends javax.swing.JFrame {
     private static Socket socket;
     private static InputStream inMsg;
     private static OutputStream outMsg;
-    private static boolean login = false;
+    private static boolean login = false, listening = true;
     private static int token;
     
     /**
@@ -102,6 +102,12 @@ public class XChange extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -134,7 +140,6 @@ public class XChange extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jTable1.setAutoCreateRowSorter(true);
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -172,7 +177,7 @@ public class XChange extends javax.swing.JFrame {
             jTable1.getColumnModel().getColumn(4).setResizable(false);
             jTable1.getColumnModel().getColumn(4).setPreferredWidth(0);
         }
-        //jTable1.removeColumn(jTable1.getColumnModel().getColumn(4));
+        jTable1.removeColumn(jTable1.getColumnModel().getColumn(4));
 
         jButton6.setText("Download");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -211,7 +216,7 @@ public class XChange extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton6)
                     .addComponent(jButton7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
                 .addComponent(jLabel5)
                 .addContainerGap())
         );
@@ -257,7 +262,7 @@ public class XChange extends javax.swing.JFrame {
             jTable2.getColumnModel().getColumn(4).setResizable(false);
             jTable2.getColumnModel().getColumn(4).setPreferredWidth(0);
         }
-        //jTable2.removeColumn(jTable2.getColumnModel().getColumn(3));
+        jTable2.removeColumn(jTable2.getColumnModel().getColumn(3));
 
         jButton3.setText("Add");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -303,10 +308,62 @@ public class XChange extends javax.swing.JFrame {
                     .addComponent(jButton3)
                     .addComponent(jButton4)
                     .addComponent(jButton5))
-                .addGap(0, 40, Short.MAX_VALUE))
+                .addGap(0, 47, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Share", jPanel4);
+
+        jTextArea1.setEditable(false);
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
+        jTextArea1.setRows(5);
+        jTextArea1.setText("\nHOW TO USE:\n                 -> In \"Share\" tab, click the \"Add\" button.\n\n                 -> Select multiple files which you want to share with other users. Note that this doesn't upload the files\n                       anywhere, it only makes files on your computer available for download. Also, DO NOT remove or replace the\n                       shared file. If you want to do so, please remove it from the \"Share\" tab.\n\n                 -> Click on \"Remove\" button to remove the selected files from \"Share\" tab.\n\n                 -> Click on \"Remove All\" button to remove all the files from \"Share\" tab.\n\n                 -> In \"Download\" tab, select the file which you want to download.\n\n                 -> Click the download button to begin downloading. Make sure that there aren't any square brackets Please DO NOT open, remove, or replace the file while the\n                       download is in progress. This may result in the file being corrupted.\n\n                 -> Note that the Developers or the Institute is not liable for copyright or any other legal issues, since all the file \n                       sharing occurs between two computers. The server is not involved in any way.\n\n                 -> This software is still in beta phase, please be considerate and try not to hack or break stuff. If you encounter any\n                       bugs, feel free to drop a mail at hinge.cs14@iitp.ac.in and help us make this software better.\n                       \n\t\n\t");
+        jTextArea1.setFocusable(false);
+        jScrollPane3.setViewportView(jTextArea1);
+
+        jLabel6.setFont(new java.awt.Font("sansserif", 0, 18)); // NOI18N
+        jLabel6.setText("XChange");
+
+        jLabel7.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
+        jLabel7.setText("v1.0");
+
+        jLabel8.setText("by Mithilesh Hinge");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 891, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel7)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel7))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 522, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Help", jPanel3);
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Connecting...");
@@ -408,13 +465,13 @@ public class XChange extends javax.swing.JFrame {
             .addGroup(jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jLayeredPane2Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
                     .addContainerGap()))
             .addGroup(jLayeredPane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jLayeredPane2Layout.createSequentialGroup()
                     .addGap(180, 180, 180)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(181, Short.MAX_VALUE)))
+                    .addContainerGap(190, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -442,6 +499,7 @@ public class XChange extends javax.swing.JFrame {
             return;
         }
         byte ret = authenticateUser(username, password);
+        DataInputStream dinMsg = new DataInputStream(inMsg);
         if(ret == BYTE_LOGIN_SUCCESSFUL){
             afterSuccessfulLogin();
             return;
@@ -450,6 +508,7 @@ public class XChange extends javax.swing.JFrame {
         }else if (ret == BYTE_LOGIN_INCORRECT){
             this.jLabel4.setText("Incorrect username or password.");
         }
+        
         this.jTextField1.setText("");
         this.jPasswordField1.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -545,9 +604,7 @@ public class XChange extends javax.swing.JFrame {
                 System.out.println("debug0");
                 DataOutputStream dOutMsg = new DataOutputStream(outMsg);
                 DataInputStream dInMsg = new DataInputStream(inMsg);
-                while(dInMsg.readByte() != BYTE_LISTENING){
-                    
-                }
+
                 dOutMsg.writeByte(BYTE_ADD);
                 dOutMsg.flush();
                 System.out.println("debug1");
@@ -564,11 +621,17 @@ public class XChange extends javax.swing.JFrame {
                 bufWriter.write(name+"\n");
                 bufWriter.flush();
                 System.out.println("debug5");
+                
+                while(dInMsg.readByte() != BYTE_LISTENING){
+                    
+                }
+                
                 token++;
                 DefaultTableModel tableModel = ((DefaultTableModel) jTable2.getModel());
                 tableModel.addRow(new String[]{name, size, date, String.valueOf(token), path});
                 
                 tableModel.fireTableDataChanged();
+                
                 
             } catch (IOException ex) {
                 Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
@@ -588,18 +651,21 @@ public class XChange extends javax.swing.JFrame {
                 int fileId = Integer.parseInt((String)jTable2.getModel().getValueAt(rows[i], 3));
                 DataOutputStream dOutMsg = new DataOutputStream(outMsg);
                 DataInputStream dInMsg = new DataInputStream(inMsg);
-                while(dInMsg.readByte() != BYTE_LISTENING){
-                    
-                }
+
                 dOutMsg.writeByte(BYTE_REMOVE);
                 dOutMsg.flush();
                 dOutMsg.writeInt(fileId);
                 dOutMsg.flush();
                 
+                while(dInMsg.readByte() != BYTE_LISTENING){
+                    
+                }
+                
                 ((DefaultTableModel) jTable2.getModel()).removeRow(rows[i]);
                 for (int ii=0; ii<rows.length; ii++){
                     rows[ii]--;
                 }
+                
             } catch (IOException ex) {
                 Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -615,14 +681,18 @@ public class XChange extends javax.swing.JFrame {
                 int fileId = Integer.parseInt((String) jTable2.getModel().getValueAt(0, 3));
                 DataOutputStream dOutMsg = new DataOutputStream(outMsg);
                 DataInputStream dInMsg = new DataInputStream(inMsg);
-                while(dInMsg.readByte() != BYTE_LISTENING){
-                }
+                
                 dOutMsg.writeByte(BYTE_REMOVE);
                 dOutMsg.flush();
                 dOutMsg.writeInt(fileId);
                 dOutMsg.flush();
                 
+                while(dInMsg.readByte() != BYTE_LISTENING){
+                    
+                }
+                
                 ((DefaultTableModel) jTable2.getModel()).removeRow(0);
+                
             }catch (IOException ex) {
                 Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -644,8 +714,7 @@ public class XChange extends javax.swing.JFrame {
             DataOutputStream dOutMsg = new DataOutputStream(outMsg);
             DataInputStream dInMsg = new DataInputStream(inMsg);
             
-            while(dInMsg.readByte() != BYTE_LISTENING){
-            }
+            
             dOutMsg.writeByte(BYTE_DOWNLOAD);
             dOutMsg.flush();
             dOutMsg.writeInt(fileId);
@@ -688,16 +757,28 @@ public class XChange extends javax.swing.JFrame {
         if (dInData.readByte() == BYTE_DOWNLOAD_FAILED_FILE_NOT_AVAILABLE){
             jLabel5.setText("File no longer available.");
         }
-
-        File dir = new File("Downloads");
+        
+        JFileChooser saveToChooser = new JFileChooser();
+        //saveToChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        saveToChooser.setSelectedFile(new File((String) jTable1.getModel().getValueAt(row, 0)));
+        int ret = saveToChooser.showSaveDialog(this);
+        if (ret != JFileChooser.APPROVE_OPTION) return;
+        
+        File dir = saveToChooser.getCurrentDirectory();
+        
         if (!dir.exists() || !dir.isDirectory()){
             if(!dir.mkdir()){
                 jLabel5.setText("Failed to create directory '"+dir.getAbsolutePath()+"'");
             }
         }
-
-        String filename = (String) jTable1.getModel().getValueAt(row, 0);
-        File file = new File(dir, filename);
+        File file = saveToChooser.getSelectedFile();
+        String filename;
+        if (file.exists()) {
+            filename = (String) jTable1.getModel().getValueAt(row, 0);
+            file = new File(dir, filename);
+        }else {
+            filename = file.getName();
+        }
         FileOutputStream fos = new FileOutputStream(file);
         byte[] buffer = new byte[16*1024];
 
@@ -813,8 +894,7 @@ public class XChange extends javax.swing.JFrame {
         try {
             DataOutputStream doutMsg = new DataOutputStream(outMsg);
             DataInputStream dinMsg = new DataInputStream(inMsg);
-            while(dinMsg.readByte() != BYTE_LISTENING){
-            }
+            
             doutMsg.writeByte(BYTE_LOGIN);
             doutMsg.flush();
             BufferedWriter bufw = new BufferedWriter(new OutputStreamWriter(outMsg));
@@ -825,6 +905,8 @@ public class XChange extends javax.swing.JFrame {
             
             
             byte msg = dinMsg.readByte();
+            
+            
             return msg;
         } catch (IOException ex) {
             Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
@@ -839,8 +921,7 @@ public class XChange extends javax.swing.JFrame {
         try {
             DataOutputStream doutMsg = new DataOutputStream(outMsg);
             DataInputStream dinMsg = new DataInputStream(inMsg);
-            while (dinMsg.readByte() != BYTE_LISTENING){
-            }
+            
             doutMsg.writeByte(BYTE_SIGNUP);
             doutMsg.flush();
             BufferedWriter bufw = new BufferedWriter(new OutputStreamWriter(outMsg));
@@ -946,8 +1027,6 @@ public class XChange extends javax.swing.JFrame {
             
             token = dinMsg.readInt();
             
-            while (dinMsg.readByte() != BYTE_LISTENING){
-            }
             doutMsg.writeByte(BYTE_GET_SHARED_LIST);
             doutMsg.flush();
             
@@ -966,6 +1045,7 @@ public class XChange extends javax.swing.JFrame {
             }
             
             jTable2.setModel(tableModel);
+            
             refreshDownloadList();
         } catch (IOException ex) {
             Logger.getLogger(XChange.class.getName()).log(Level.SEVERE, null, ex);
@@ -977,8 +1057,7 @@ public class XChange extends javax.swing.JFrame {
         try{
             DataOutputStream dOutMsg = new DataOutputStream(outMsg);
             DataInputStream dInMsg = new DataInputStream(inMsg);
-            while(dInMsg.readByte() != BYTE_LISTENING){
-            }
+            
             dOutMsg.writeByte(BYTE_GET_DOWNLOAD_LIST);
             dOutMsg.flush();
             
@@ -1016,16 +1095,22 @@ public class XChange extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLayeredPane jLayeredPane2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 
